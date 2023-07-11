@@ -31,9 +31,6 @@ static void VCountIntr(void);
 static void SerialIntr(void);
 static void IntrDummy(void);
 
-// Defined in the linker script so that the test build can override it.
-extern void gInitialMainCB2(void);
-
 const u8 gGameVersion = GAME_VERSION;
 
 const u8 gGameLanguage = GAME_LANGUAGE; // English
@@ -90,12 +87,6 @@ void EnableVCountIntrAtLine150(void);
 
 void AgbMain()
 {
-    // Modern compilers are liberal with the stack on entry to this function,
-    // so RegisterRamReset may crash if it resets IWRAM.
-#if !MODERN
-    RegisterRamReset(RESET_ALL);
-#endif //MODERN
-    *(vu16 *)BG_PLTT = RGB_WHITE; // Set the backdrop to white on startup
     InitGpuRegManager();
     REG_WAITCNT = WAITCNT_PREFETCH_ENABLE | WAITCNT_WS0_S_1 | WAITCNT_WS0_N_3;
     InitKeys();
@@ -107,9 +98,7 @@ void AgbMain()
     CheckForFlashMemory();
     InitMainCallbacks();
     InitMapMusic();
-#ifdef BUGFIX
-    SeedRngWithRtc(); // see comment at SeedRngWithRtc definition below
-#endif
+    SeedRngWithRtc();
     ClearDma3Requests();
     ResetBgs();
     SetDefaultFontsPointer();
@@ -188,7 +177,11 @@ static void InitMainCallbacks(void)
     gTrainerHillVBlankCounter = NULL;
     gMain.vblankCounter2 = 0;
     gMain.callback1 = NULL;
-    SetMainCallback2(gInitialMainCB2);
+    #ifdef TEST
+    SetMainCallback2(CB2_TestRunner);
+    #else
+    SetMainCallback2(CB2_InitCopyrightScreenAfterBootup);
+    #endif
     gSaveBlock2Ptr = &gSaveblock2.block;
     gPokemonStoragePtr = &gPokemonStorage.block;
 }

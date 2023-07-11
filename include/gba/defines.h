@@ -6,16 +6,10 @@
 #define TRUE  1
 #define FALSE 0
 
-#define IWRAM_DATA __attribute__((section("iwram_data")))
-#define EWRAM_DATA __attribute__((section("ewram_data")))
+#define IWRAM_DATA __attribute__((section(".iwram_data")))
+#define EWRAM_DATA __attribute__((section(".ewram_data")))
 #define UNUSED __attribute__((unused))
-
-#if MODERN
 #define NOINLINE __attribute__((noinline))
-#else
-#define NOINLINE
-#endif
-
 #define ALIGNED(n) __attribute__((aligned(n)))
 
 #define SOUND_INFO_PTR (*(struct SoundInfo **)0x3007FF0)

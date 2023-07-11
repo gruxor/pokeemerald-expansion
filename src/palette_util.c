@@ -417,8 +417,7 @@ void UpdatePulseBlend(struct PulseBlend *pulseBlend)
                             }
                         }
                         break;
-                    case (MODERN ? -2 : 2): // Flip back and forth
-                        // This code is never reached in vanilla
+                    case (-2): // Flip back and forth
                         if (pulseBlendPalette->fadeDirection)
                             pulseBlendPalette->blendCoeff = 0;
                         else

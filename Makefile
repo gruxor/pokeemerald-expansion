@@ -22,13 +22,9 @@ PREFIX := arm-none-eabi-
 OBJCOPY := $(PREFIX)objcopy
 OBJDUMP := $(PREFIX)objdump
 AS := $(PREFIX)as
-
 LD := $(PREFIX)ld
 
-# note: the makefile must be set up so MODERNCC is never called
-# if MODERN=0
-MODERNCC := $(PREFIX)gcc
-PATH_MODERNCC := PATH="$(PATH)" $(MODERNCC)
+PATH_CC := PATH="$(PATH)" $(PREFIX)gcc
 
 ifeq ($(OS),Windows_NT)
 EXE := .exe
@@ -40,12 +36,8 @@ TITLE       := POKEMON EMER
 GAME_CODE   := BPEE
 MAKER_CODE  := 01
 REVISION    := 0
-MODERN      ?= 0
+MODERN      := 1
 TEST        ?= 0
-
-ifeq (modern,$(MAKECMDGOALS))
-  MODERN := 1
-endif
 
 ifeq (check,$(MAKECMDGOALS))
   TEST := 1
@@ -58,25 +50,12 @@ endif
 # we can't unconditionally use arm-none-eabi-cpp
 # as installations which install binutils-arm-none-eabi
 # don't come with it
-ifneq ($(MODERN),1)
-  ifeq ($(shell uname -s),Darwin)
-    CPP := $(PREFIX)cpp
-  else
-    CPP := $(CC) -E
-  endif
-else
-  CPP := $(PREFIX)cpp
-endif
+CPP := $(PREFIX)cpp
 
 ROM_NAME := pokeemerald.gba
 ELF_NAME := $(ROM_NAME:.gba=.elf)
 MAP_NAME := $(ROM_NAME:.gba=.map)
 OBJ_DIR_NAME := build/emerald
-
-MODERN_ROM_NAME := pokeemerald_modern.gba
-MODERN_ELF_NAME := $(MODERN_ROM_NAME:.gba=.elf)
-MODERN_MAP_NAME := $(MODERN_ROM_NAME:.gba=.map)
-MODERN_OBJ_DIR_NAME := build/modern
 
 SHELL := /bin/bash -o pipefail
 
@@ -107,23 +86,14 @@ SONG_BUILDDIR = $(OBJ_DIR)/$(SONG_SUBDIR)
 MID_BUILDDIR = $(OBJ_DIR)/$(MID_SUBDIR)
 TEST_BUILDDIR = $(OBJ_DIR)/$(TEST_SUBDIR)
 
-ASFLAGS := -mcpu=arm7tdmi --defsym MODERN=$(MODERN)
+ASFLAGS := -mcpu=arm7tdmi
 
-ifeq ($(MODERN),0)
-CC1             := tools/agbcc/bin/agbcc$(EXE)
-override CFLAGS += -mthumb-interwork -Wimplicit -Wparentheses -Werror -O2 -fhex-asm -g
+CC1 = $(shell $(PATH_CC) --print-prog-name=cc1) -quiet
+CFLAGS = -mthumb -mthumb-interwork -O2 -mabi=apcs-gnu -mtune=arm7tdmi -march=armv4t -fno-toplevel-reorder -Wno-pointer-to-int-cast -std=gnu2x
 ROM := $(ROM_NAME)
 OBJ_DIR := $(OBJ_DIR_NAME)
-LIBPATH := -L ../../tools/agbcc/lib
-LIB := $(LIBPATH) -lgcc -lc -L../../libagbsyscall -lagbsyscall
-else
-CC1              = $(shell $(PATH_MODERNCC) --print-prog-name=cc1) -quiet
-override CFLAGS += -mthumb -mthumb-interwork -O2 -mabi=apcs-gnu -mtune=arm7tdmi -march=armv4t -fno-toplevel-reorder -Wno-pointer-to-int-cast
-ROM := $(MODERN_ROM_NAME)
-OBJ_DIR := $(MODERN_OBJ_DIR_NAME)
-LIBPATH := -L "$(dir $(shell $(PATH_MODERNCC) -mthumb -print-file-name=libgcc.a))" -L "$(dir $(shell $(PATH_MODERNCC) -mthumb -print-file-name=libnosys.a))" -L "$(dir $(shell $(PATH_MODERNCC) -mthumb -print-file-name=libc.a))"
+LIBPATH := -L "$(dir $(shell $(PATH_CC) -mthumb -print-file-name=libgcc.a))" -L "$(dir $(shell $(PATH_CC) -mthumb -print-file-name=libnosys.a))" -L "$(dir $(shell $(PATH_CC) -mthumb -print-file-name=libc.a))"
 LIB := $(LIBPATH) -lc -lnosys -lgcc -L../../libagbsyscall -lagbsyscall
-endif
 
 ifeq ($(TESTELF),$(MAKECMDGOALS))
   TEST := 1
@@ -134,9 +104,6 @@ OBJ_DIR := $(TEST_OBJ_DIR_NAME)
 endif
 
 CPPFLAGS := -iquote include -iquote $(GFLIB_SUBDIR) -Wno-trigraphs -DMODERN=$(MODERN) -DTESTING=$(TEST)
-ifneq ($(MODERN),1)
-CPPFLAGS += -I tools/agbcc/include -I tools/agbcc -nostdinc -undef
-endif
 
 LDFLAGS = -Map ../../$(MAP)
 
@@ -174,7 +141,7 @@ MAKEFLAGS += --no-print-directory
 # Secondary expansion is required for dependency variables in object rules.
 .SECONDEXPANSION:
 
-.PHONY: all rom clean compare tidy tools check-tools mostlyclean clean-tools clean-check-tools $(TOOLDIRS) $(CHECKTOOLDIRS) libagbsyscall modern tidymodern tidynonmodern check
+.PHONY: all rom clean compare tidy tools check-tools mostlyclean clean-tools clean-check-tools $(TOOLDIRS) $(CHECKTOOLDIRS) libagbsyscall tidy check
 
 infoshell = $(foreach line, $(shell $1 | sed "s/ /__SPACE__/g"), $(info $(subst __SPACE__, ,$(line))))
 
@@ -182,7 +149,7 @@ infoshell = $(foreach line, $(shell $1 | sed "s/ /__SPACE__/g"), $(info $(subst 
 # Disable dependency scanning for clean/tidy/tools
 # Use a separate minimal makefile for speed
 # Since we don't need to reload most of this makefile
-ifeq (,$(filter-out all rom compare modern check libagbsyscall syms $(TESTELF),$(MAKECMDGOALS)))
+ifeq (,$(filter-out all rom compare check libagbsyscall syms $(TESTELF),$(MAKECMDGOALS)))
 $(call infoshell, $(MAKE) -f make_tools.mk)
 else
 NODEP ?= 1
@@ -192,9 +159,9 @@ endif
 ifeq (,$(MAKECMDGOALS))
   SCAN_DEPS ?= 1
 else
-  # clean, tidy, tools, check-tools, mostlyclean, clean-tools, clean-check-tools, $(TOOLDIRS), $(CHECKTOOLDIRS), tidymodern, tidynonmodern, tidycheck don't even build the ROM
+  # clean, tidy, tools, check-tools, mostlyclean, clean-tools, clean-check-tools, $(TOOLDIRS), $(CHECKTOOLDIRS), tidy, tidycheck don't even build the ROM
   # libagbsyscall does its own thing
-  ifeq (,$(filter-out clean tidy tools mostlyclean clean-tools $(TOOLDIRS) clean-check-tools $(CHECKTOOLDIRS) tidymodern tidynonmodern tidycheck libagbsyscall,$(MAKECMDGOALS)))
+  ifeq (,$(filter-out clean tidy tools mostlyclean clean-tools $(TOOLDIRS) clean-check-tools $(CHECKTOOLDIRS) tidy tidycheck libagbsyscall,$(MAKECMDGOALS)))
     SCAN_DEPS ?= 0
   else
     SCAN_DEPS ?= 1
@@ -271,7 +238,7 @@ clean-tools:
 clean-check-tools:
 	@$(foreach tooldir,$(CHECKTOOLDIRS),$(MAKE) clean -C $(tooldir);)
 
-mostlyclean: tidynonmodern tidymodern tidycheck
+mostlyclean: tidy tidycheck
 	rm -f $(SAMPLE_SUBDIR)/*.bin
 	rm -f $(CRY_SUBDIR)/*.bin
 	rm -f $(MID_SUBDIR)/*.s
@@ -282,23 +249,15 @@ mostlyclean: tidynonmodern tidymodern tidycheck
 	rm -f $(AUTO_GEN_TARGETS)
 	@$(MAKE) clean -C libagbsyscall
 
-tidy: tidynonmodern tidymodern tidycheck
+tidy: tidy tidycheck
 
-tidynonmodern:
+tidy:
 	rm -f $(ROM_NAME) $(ELF_NAME) $(MAP_NAME)
 	rm -rf $(OBJ_DIR_NAME)
-
-tidymodern:
-	rm -f $(MODERN_ROM_NAME) $(MODERN_ELF_NAME) $(MODERN_MAP_NAME)
-	rm -rf $(MODERN_OBJ_DIR_NAME)
 
 tidycheck:
 	rm -f $(TESTELF) $(HEADLESSELF)
 	rm -rf $(TEST_OBJ_DIR_NAME)
-
-ifneq ($(MODERN),0)
-$(C_BUILDDIR)/berry_crush.o: override CFLAGS += -Wno-address-of-packed-member
-endif
 
 include graphics_file_rules.mk
 include map_data_rules.mk
@@ -324,24 +283,7 @@ $(CRY_SUBDIR)/%.bin: $(CRY_SUBDIR)/%.aif ; $(AIF) $< $@ --compress
 sound/%.bin: sound/%.aif ; $(AIF) $< $@
 
 
-ifeq ($(MODERN),0)
-$(C_BUILDDIR)/libc.o: CC1 := tools/agbcc/bin/old_agbcc$(EXE)
-$(C_BUILDDIR)/libc.o: CFLAGS := -O2
-
-$(C_BUILDDIR)/siirtc.o: CFLAGS := -mthumb-interwork
-
-$(C_BUILDDIR)/agb_flash.o: CFLAGS := -O -mthumb-interwork
-$(C_BUILDDIR)/agb_flash_1m.o: CFLAGS := -O -mthumb-interwork
-$(C_BUILDDIR)/agb_flash_mx.o: CFLAGS := -O -mthumb-interwork
-
-$(C_BUILDDIR)/m4a.o: CC1 := tools/agbcc/bin/old_agbcc$(EXE)
-
-$(C_BUILDDIR)/record_mixing.o: CFLAGS += -ffreestanding
-$(C_BUILDDIR)/librfu_intr.o: CC1 := tools/agbcc/bin/agbcc_arm$(EXE)
-$(C_BUILDDIR)/librfu_intr.o: CFLAGS := -O2 -mthumb-interwork -quiet
-else
 $(C_BUILDDIR)/librfu_intr.o: CFLAGS := -mthumb-interwork -O2 -mabi=apcs-gnu -mtune=arm7tdmi -march=armv4t -fno-toplevel-reorder -Wno-pointer-to-int-cast
-endif
 
 ifeq ($(DINFO),1)
 override CFLAGS += -g
@@ -439,15 +381,6 @@ endif
 $(SONG_BUILDDIR)/%.o: $(SONG_SUBDIR)/%.s
 	$(AS) $(ASFLAGS) -I sound -o $@ $<
 
-$(OBJ_DIR)/sym_bss.ld: sym_bss.txt
-	$(RAMSCRGEN) .bss $< ENGLISH > $@
-
-$(OBJ_DIR)/sym_common.ld: sym_common.txt $(C_OBJS) $(wildcard common_syms/*.txt)
-	$(RAMSCRGEN) COMMON $< ENGLISH -c $(C_BUILDDIR),common_syms > $@
-
-$(OBJ_DIR)/sym_ewram.ld: sym_ewram.txt
-	$(RAMSCRGEN) ewram_data $< ENGLISH > $@
-
 # NOTE: Based on C_DEP above, but without NODEP and KEEP_TEMPS handling.
 define TEST_DEP
 $1: $2 $$(shell $(SCANINC) -I include -I tools/agbcc/include -I gflib -I test $2)
@@ -456,13 +389,8 @@ $1: $2 $$(shell $(SCANINC) -I include -I tools/agbcc/include -I gflib -I test $2
 endef
 $(foreach src, $(TEST_SRCS), $(eval $(call TEST_DEP,$(patsubst $(TEST_SUBDIR)/%.c,$(TEST_BUILDDIR)/%.o,$(src)),$(src),$(patsubst $(TEST_SUBDIR)/%.c,%,$(src)))))
 
-ifeq ($(MODERN),0)
 LD_SCRIPT := ld_script.txt
-LD_SCRIPT_DEPS := $(OBJ_DIR)/sym_bss.ld $(OBJ_DIR)/sym_common.ld $(OBJ_DIR)/sym_ewram.ld
-else
-LD_SCRIPT := ld_script_modern.txt
 LD_SCRIPT_DEPS :=
-endif
 
 $(OBJ_DIR)/ld_script.ld: $(LD_SCRIPT) $(LD_SCRIPT_DEPS)
 	cd $(OBJ_DIR) && sed "s#tools/#../../tools/#g" ../../$(LD_SCRIPT) > ld_script.ld
@@ -475,8 +403,6 @@ $(ELF): $(OBJ_DIR)/ld_script.ld $(OBJS) libagbsyscall
 $(ROM): $(ELF)
 	$(OBJCOPY) -O binary $< $@
 	$(FIX) $@ -p --silent
-
-modern: all
 
 LD_SCRIPT_TEST := ld_script_test.txt
 

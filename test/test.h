@@ -67,7 +67,7 @@ extern struct FunctionTestRunnerState *gFunctionTestRunnerState;
 
 extern struct TestRunnerState gTestRunnerState;
 
-void CB2_TestRunner(void);
+extern void CB2_TestRunner(void);
 
 void Test_ExpectedResult(enum TestResult);
 void Test_ExpectLeaks(bool32);
