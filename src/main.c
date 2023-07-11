@@ -177,7 +177,7 @@ static void InitMainCallbacks(void)
     gTrainerHillVBlankCounter = NULL;
     gMain.vblankCounter2 = 0;
     gMain.callback1 = NULL;
-    #ifdef TEST
+    #if TESTING
     SetMainCallback2(CB2_TestRunner);
     #else
     SetMainCallback2(CB2_InitCopyrightScreenAfterBootup);
