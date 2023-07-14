@@ -1,56 +1,46 @@
-TOOLCHAIN := $(DEVKITARM)
-COMPARE ?= 0
-
-ifeq (compare,$(MAKECMDGOALS))
-  COMPARE := 1
-endif
-
-# don't use dkP's base_tools anymore
-# because the redefinition of $(CC) conflicts
-# with when we want to use $(CC) to preprocess files
-# thus, manually create the variables for the bin
-# files, or use arm-none-eabi binaries on the system
-# if dkP is not installed on this system
-
-ifneq (,$(TOOLCHAIN))
-ifneq ($(wildcard $(TOOLCHAIN)/bin),)
-export PATH := $(TOOLCHAIN)/bin:$(PATH)
-endif
-endif
-
+###################
+# Toolchain vars #
+###################
 PREFIX := arm-none-eabi-
 OBJCOPY := $(PREFIX)objcopy
 OBJDUMP := $(PREFIX)objdump
 AS := $(PREFIX)as
 LD := $(PREFIX)ld
+GCC := $(PREFIX)gcc
+CPP := $(PREFIX)cpp
 
-PATH_CC := PATH="$(PATH)" $(PREFIX)gcc
-
-ifeq ($(OS),Windows_NT)
-EXE := .exe
-else
-EXE :=
-endif
+##########################
+# Header vars for gbafix #
+##########################
 
 TITLE       := POKEMON EMER
 GAME_CODE   := BPEE
 MAKER_CODE  := 01
 REVISION    := 0
-MODERN      := 1
-TEST        ?= 0
+
+##################
+# Command/environment checks #
+##################
+
+ifeq (compare,$(MAKECMDGOALS))
+  COMPARE := 1
+endif
 
 ifeq (check,$(MAKECMDGOALS))
   TEST := 1
 endif
 
-# use arm-none-eabi-cpp for macOS
-# as macOS's default compiler is clang
-# and clang's preprocessor will warn on \u
-# when preprocessing asm files, expecting a unicode literal
-# we can't unconditionally use arm-none-eabi-cpp
-# as installations which install binutils-arm-none-eabi
-# don't come with it
-CPP := $(PREFIX)cpp
+# Windows_NT is the variable that's still used for most (all?) versions of Windows
+# This appends an .exe extension to the various executables that the makefile is looking for
+# Otherwise, we don't need an extension at all appended to the executables
+ifeq ($(OS),Windows_NT)
+EXE := .exe
+endif
+EXE ?=
+
+########################
+# Output configuration #
+########################
 
 ROM_NAME := pokeemerald.gba
 ELF_NAME := $(ROM_NAME:.gba=.elf)
@@ -88,11 +78,11 @@ TEST_BUILDDIR = $(OBJ_DIR)/$(TEST_SUBDIR)
 
 ASFLAGS := -mcpu=arm7tdmi
 
-CC1 = $(shell $(PATH_CC) --print-prog-name=cc1) -quiet
+CC1 = $(shell $(GCC) --print-prog-name=cc1) -quiet
 CFLAGS = -mthumb -mthumb-interwork -O2 -mabi=apcs-gnu -mtune=arm7tdmi -march=armv4t -fno-toplevel-reorder -Wno-pointer-to-int-cast -std=gnu2x
 ROM := $(ROM_NAME)
 OBJ_DIR := $(OBJ_DIR_NAME)
-LIBPATH := -L "$(dir $(shell $(PATH_CC) -mthumb -print-file-name=libgcc.a))" -L "$(dir $(shell $(PATH_CC) -mthumb -print-file-name=libnosys.a))" -L "$(dir $(shell $(PATH_CC) -mthumb -print-file-name=libc.a))"
+LIBPATH := -L "$(dir $(shell $(GCC) -mthumb -print-file-name=libgcc.a))" -L "$(dir $(shell $(GCC) -mthumb -print-file-name=libnosys.a))" -L "$(dir $(shell $(GCC) -mthumb -print-file-name=libc.a))"
 LIB := $(LIBPATH) -lc -lnosys -lgcc -L../../libagbsyscall -lagbsyscall
 
 ifeq ($(TESTELF),$(MAKECMDGOALS))
@@ -103,7 +93,7 @@ ifeq ($(TEST),1)
 OBJ_DIR := $(TEST_OBJ_DIR_NAME)
 endif
 
-CPPFLAGS := -iquote include -iquote $(GFLIB_SUBDIR) -Wno-trigraphs -DMODERN=$(MODERN) -DTESTING=$(TEST)
+CPPFLAGS := -iquote include -iquote $(GFLIB_SUBDIR) -Wno-trigraphs -DTESTING=$(TEST)
 
 LDFLAGS = -Map ../../$(MAP)
 
@@ -427,7 +417,7 @@ check: $(TESTELF)
 	$(ROMTESTHYDRA) $(ROMTEST) $(OBJCOPY) $(HEADLESSELF)
 
 libagbsyscall:
-	@$(MAKE) -C libagbsyscall TOOLCHAIN=$(TOOLCHAIN) MODERN=$(MODERN)
+	@$(MAKE) -C libagbsyscall TOOLCHAIN=$(TOOLCHAIN)
 
 ###################
 ### Symbol file ###

@@ -1,34 +1,6 @@
-TOOLCHAIN := $(DEVKITARM)
-COMPARE ?= 0
-
-# don't use dkP's base_tools anymore
-# because the redefinition of $(CC) conflicts
-# with when we want to use $(CC) to preprocess files
-# thus, manually create the variables for the bin
-# files, or use arm-none-eabi binaries on the system
-# if dkP is not installed on this system
-
-ifneq (,$(TOOLCHAIN))
-ifneq ($(wildcard $(TOOLCHAIN)/bin),)
-export PATH := $(TOOLCHAIN)/bin:$(PATH)
-endif
-endif
-
 PREFIX := arm-none-eabi-
-OBJCOPY := $(PREFIX)objcopy
 AS := $(PREFIX)as
-LD := $(PREFIX)ld
 AR := $(PREFIX)ar
-
-MODERNCC := $(PREFIX)gcc
-
-ifeq ($(OS),Windows_NT)
-EXE := .exe
-else
-EXE :=
-endif
-
-CPP := $(PREFIX)cpp
 
 ASFLAGS := -mcpu=arm7tdmi
 ARFLAGS := rc
