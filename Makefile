@@ -4,10 +4,13 @@
 PREFIX := arm-none-eabi-
 OBJCOPY := $(PREFIX)objcopy
 OBJDUMP := $(PREFIX)objdump
+AR := $(PREFIX)ar
 AS := $(PREFIX)as
-LD := $(PREFIX)ld
-GCC := $(PREFIX)gcc
 CPP := $(PREFIX)cpp
+GCC := $(PREFIX)gcc
+LD := $(PREFIX)ld
+NM := $(PREFIX)nm
+RANLIB := $(PREFIX)ranlib
 
 ##########################
 # Header vars for gbafix #
@@ -29,6 +32,7 @@ endif
 ifeq (check,$(MAKECMDGOALS))
   TEST := 1
 endif
+TEST ?= 0
 
 # Windows_NT is the variable that's still used for most (all?) versions of Windows
 # This appends an .exe extension to the various executables that the makefile is looking for
