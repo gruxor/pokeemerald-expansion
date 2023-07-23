@@ -18,7 +18,7 @@
 	.include "asm/macros/battle_script.inc"
 	.include "constants/constants.inc"
 
-	.section script_data, "aw", %progbits
+	.section .script_data, "aw", %progbits
 
 .align 2
 gBattleScriptsForMoveEffects::

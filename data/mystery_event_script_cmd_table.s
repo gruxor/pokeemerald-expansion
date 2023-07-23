@@ -1,4 +1,4 @@
-	.section script_data, "aw", %progbits
+	.section .script_data, "aw", %progbits
 
 	.align 2
 gMysteryEventScriptCmdTable::

@@ -1,7 +1,7 @@
 	.include "asm/macros.inc"
 	.include "constants/constants.inc"
 
-	.section script_data, "aw", %progbits
+	.section .script_data, "aw", %progbits
 
 	.align 2
 gFieldEffectScriptPointers::
