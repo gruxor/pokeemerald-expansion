@@ -1,8 +1,6 @@
 #ifndef GUARD_ALLOC_H
 #define GUARD_ALLOC_H
 
-#define HEAP_SIZE 0x1C000
-
 #define FREE_AND_SET_NULL(ptr)          \
 {                                       \
     Free(ptr);                          \
@@ -41,8 +39,6 @@ struct MemBlock
     // Data in the memory block. (Arrays of length 0 are a GNU extension.)
     u8 data[0];
 };
-
-extern u8 gHeap[];
 
 #if TESTING || !defined(NDEBUG)
 

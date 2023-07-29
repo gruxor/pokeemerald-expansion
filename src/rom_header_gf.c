@@ -15,6 +15,7 @@
 // these values useful, so there's some potential benefit to keeping it.
 // If there's a compilation problem below, just comment out the assignment
 // instead of changing this struct.
+__attribute__((section(".headers")))
 struct GFRomHeader
 {
     u32 version;
@@ -93,9 +94,7 @@ struct GFRomHeader
     u32 unk20;
 };
 
-// This seems to need to be in the text section for some reason.
-// To avoid a changed section attributes warning it's put in a special .text.consts section.
-__attribute__((section(".text.consts")))
+__attribute__((section(".headers")))
 static const struct GFRomHeader sGFRomHeader = {
     .version = GAME_VERSION,
     .language = GAME_LANGUAGE,

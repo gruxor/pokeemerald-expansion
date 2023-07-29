@@ -25,22 +25,24 @@ REVISION    := 0
 # Command/environment checks #
 ##################
 
-ifeq (compare,$(MAKECMDGOALS))
-  COMPARE := 1
-endif
-
-ifeq (check,$(MAKECMDGOALS))
-  TEST := 1
-endif
-TEST ?= 0
-
 # Windows_NT is the variable that's still used for most (all?) versions of Windows
 # This appends an .exe extension to the various executables that the makefile is looking for
 # Otherwise, we don't need an extension at all appended to the executables
 ifeq ($(OS),Windows_NT)
-EXE := .exe
+  EXE := .exe
 endif
+
+ifeq (compare, $(MAKECMDGOALS))
+  COMPARE := 1
+endif
+
+ifeq (check, $(MAKECMDGOALS))
+  TEST := 1
+endif
+
 EXE ?=
+COMPARE ?= 0
+TEST ?= 0
 
 ########################
 # Output configuration #
@@ -144,7 +146,7 @@ infoshell = $(foreach line, $(shell $1 | sed "s/ /__SPACE__/g"), $(info $(subst 
 # Use a separate minimal makefile for speed
 # Since we don't need to reload most of this makefile
 ifeq (,$(filter-out all rom compare check libagbsyscall syms $(TESTELF),$(MAKECMDGOALS)))
-$(call infoshell, $(MAKE) -f make_tools.mk)
+$(call infoshell, $(MAKE) -f makerules/make_tools.mk)
 else
 NODEP ?= 1
 endif
@@ -253,11 +255,11 @@ tidycheck:
 	rm -f $(TESTELF) $(HEADLESSELF)
 	rm -rf $(TEST_OBJ_DIR_NAME)
 
-include graphics_file_rules.mk
-include map_data_rules.mk
-include spritesheet_rules.mk
-include json_data_rules.mk
-include songs.mk
+include makerules/graphics_file_rules.mk
+include makerules/map_data_rules.mk
+include makerules/spritesheet_rules.mk
+include makerules/json_data_rules.mk
+include makerules/songs.mk
 
 %.s: ;
 %.png: ;
@@ -383,29 +385,21 @@ $1: $2 $$(shell $(SCANINC) -I include -I tools/agbcc/include -I gflib -I test $2
 endef
 $(foreach src, $(TEST_SRCS), $(eval $(call TEST_DEP,$(patsubst $(TEST_SUBDIR)/%.c,$(TEST_BUILDDIR)/%.o,$(src)),$(src),$(patsubst $(TEST_SUBDIR)/%.c,%,$(src)))))
 
-LD_SCRIPT := ld_script.txt
+LD_SCRIPT := linker_script.ld
 LD_SCRIPT_DEPS :=
 
-$(OBJ_DIR)/ld_script.ld: $(LD_SCRIPT) $(LD_SCRIPT_DEPS)
-	cd $(OBJ_DIR) && sed "s#tools/#../../tools/#g" ../../$(LD_SCRIPT) > ld_script.ld
-
-$(ELF): $(OBJ_DIR)/ld_script.ld $(OBJS) libagbsyscall
-	@echo "cd $(OBJ_DIR) && $(LD) $(LDFLAGS) -T ld_script.ld -o ../../$@ <objects> <lib>"
-	@cd $(OBJ_DIR) && $(LD) $(LDFLAGS) -T ld_script.ld -o ../../$@ $(OBJS_REL) $(LIB)
+$(ELF): $(OBJS) libagbsyscall
+	@echo "cd $(OBJ_DIR) && $(LD) $(LDFLAGS) -T ../../$(LD_SCRIPT) -o ../../$@ <objects> <lib>"
+	@cd $(OBJ_DIR) && $(LD) $(LDFLAGS) -T ../../$(LD_SCRIPT) -o ../../$@ $(OBJS_REL) $(LIB)
 	$(FIX) $@ -t"$(TITLE)" -c$(GAME_CODE) -m$(MAKER_CODE) -r$(REVISION) --silent
 
 $(ROM): $(ELF)
 	$(OBJCOPY) -O binary $< $@
 	$(FIX) $@ -p --silent
 
-LD_SCRIPT_TEST := ld_script_test.txt
-
-$(OBJ_DIR)/ld_script_test.ld: $(LD_SCRIPT_TEST) $(LD_SCRIPT_DEPS)
-	cd $(OBJ_DIR) && sed "s#tools/#../../tools/#g" ../../$(LD_SCRIPT_TEST) > ld_script_test.ld
-
-$(TESTELF): $(OBJ_DIR)/ld_script_test.ld $(OBJS) $(TEST_OBJS) libagbsyscall tools check-tools
-	@echo "cd $(OBJ_DIR) && $(LD) -T ld_script_test.ld -o ../../$@ <objects> <test-objects> <lib>"
-	@cd $(OBJ_DIR) && $(LD) $(TESTLDFLAGS) -T ld_script_test.ld -o ../../$@ $(OBJS_REL) $(TEST_OBJS_REL) $(LIB)
+$(TESTELF): $(OBJS) $(TEST_OBJS) libagbsyscall tools check-tools
+	@echo "cd $(OBJ_DIR) && $(LD) -T ../../$(LD_SCRIPT) -o ../../$@ <objects> <test-objects> <lib>"
+	@cd $(OBJ_DIR) && $(LD) $(TESTLDFLAGS) -T ../../$(LD_SCRIPT) -o ../../$@ $(OBJS_REL) $(TEST_OBJS_REL) $(LIB)
 	$(FIX) $@ -t"$(TITLE)" -c$(GAME_CODE) -m$(MAKER_CODE) -r$(REVISION) --silent
 	$(PATCHELF) $(TESTELF) gTestRunnerArgv "$(TESTS)\0"
 

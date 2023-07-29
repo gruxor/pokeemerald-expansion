@@ -1154,7 +1154,7 @@ void CB2_InitCopyrightScreenAfterBootup(void)
         if (gSaveFileStatus == SAVE_STATUS_EMPTY || gSaveFileStatus == SAVE_STATUS_CORRUPT)
             Sav2_ClearSetDefault();
         SetPokemonCryStereo(gSaveBlock2Ptr->optionsSound);
-        InitHeap(gHeap, HEAP_SIZE);
+        InitHeap(gHeap, __HEAP_SIZE);
     }
 }
 

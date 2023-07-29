@@ -17,6 +17,19 @@
 #include "constants/easy_chat.h"
 #include "constants/trainer_hill.h"
 
+// Linker variables, see linker_script.ld for definitions.
+extern u32 __ROM_START[];
+extern u32 __ROM_END[];
+extern u32 __EWRAM_START[];
+extern u32 __EWRAM_END[];
+extern u32 __IWRAM_START[];
+extern u32 __IWRAM_END[];
+extern u32 __HEAP_START[];
+extern u32 __HEAP_SIZE[];
+extern u32 __HEAP_END[];
+
+#define gHeap __HEAP_START
+
 // Prevent cross-jump optimization.
 #define BLOCK_CROSS_JUMP asm("");
 

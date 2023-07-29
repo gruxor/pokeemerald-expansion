@@ -1,4 +1,7 @@
-ENTRY(Start)
+OUTPUT_FORMAT("elf32-littlearm")
+OUTPUT_ARCH(arm)
+
+ENTRY(Start) /* Corresponds to the entrypoint in rom_header.s */
 
 MEMORY {
     ROM         : ORIGIN = 0x08000000, LENGTH = 32M
@@ -6,19 +9,28 @@ MEMORY {
     IWRAM       : ORIGIN = 0x03000000, LENGTH = 32K
 }
 
-SECTIONS {
+/* Helper variables, exposed in global.h */
 
-    .text : ALIGN(4)
+__ROM_START = ORIGIN(ROM);
+__EWRAM_START = ORIGIN(EWRAM);
+__IWRAM_START = ORIGIN(IWRAM);
+
+__HEAP_START = __EWRAM_START;
+__HEAP_SIZE = 0x1C000;
+__HEAP_END = (__EWRAM_START + __HEAP_SIZE);
+
+SECTIONS {
+    .headers : ALIGN(4)
     {
-        src/rom_header.o(.text*);
-        src/rom_header_gf.o(.text*);
+        src/rom_header.o(.headers*);
+        src/rom_header_gf.o(.headers*);
     } > ROM
 
-    .ewram : ALIGN(4)
+    .ewram (NOLOAD) : ALIGN(4)
     {
-        gHeap = .;
-        . = 0x1C000;
+        . = __HEAP_SIZE;
         *(.ewram_data*);
+        __EWRAM_SIZE = .;
     } > EWRAM AT > ROM
 
     .iwram (NOLOAD) : ALIGN(4)
@@ -28,7 +40,7 @@ SECTIONS {
 
     .iwram : ALIGN(4)
     {
-        *(.iwram_data*);
+        *(.iwram_data*); 
     } > IWRAM AT > ROM
 
     .text : ALIGN(4)
