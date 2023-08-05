@@ -45,3 +45,27 @@ const u16 gIntroBubbles_Pal[] = INCBIN_U16("graphics/intro/scene_3/bubbles.gbapa
 
 const u32 gIntroFlygonSilhouette_Gfx[] = INCBIN_U32("graphics/intro/scene_1/flygon.4bpp.lz");
 const u32 gIntroSparkle_Gfx[] = INCBIN_U32("graphics/intro/scene_1/sparkle.4bpp.lz");
+
+// TODO_RSTN clean up comments so these don't get accidentally remove, also refine config bc testing
+// These are exposed by RSTN so that the variable names can be shared between both
+// and for configuration purposes.
+const u16 gIntroDrops_Pal[]            = INCBIN_U16("graphics/intro/scene_1/drops.gbapal");
+const u16 gIntroLogo_Pal[]             = INCBIN_U16("graphics/intro/scene_1/logo.gbapal");
+const u32 gIntroDropsLogo_Gfx[]        = INCBIN_U32("graphics/intro/scene_1/drops_logo.4bpp.lz");
+const u16 gIntro1Bg_Pal[16][16]        = INCBIN_U16("graphics/intro/scene_1/bg.gbapal");
+const u32 gIntro1Bg0_Tilemap[]         = INCBIN_U32("graphics/intro/scene_1/bg0_map.bin.lz");
+const u32 gIntro1Bg1_Tilemap[]         = INCBIN_U32("graphics/intro/scene_1/bg1_map.bin.lz");
+const u32 gIntro1Bg2_Tilemap[]         = INCBIN_U32("graphics/intro/scene_1/bg2_map.bin.lz");
+const u32 gIntro1Bg3_Tilemap[]         = INCBIN_U32("graphics/intro/scene_1/bg3_map.bin.lz");
+const u32 gIntro1Bg_Gfx[]              = INCBIN_U32("graphics/intro/scene_1/bg.4bpp.lz");
+const u16 gIntroPokeball_Pal[]         = INCBIN_U16("graphics/intro/scene_3/pokeball.gbapal");
+const u32 gIntroPokeball_Tilemap[]     = INCBIN_U32("graphics/intro/scene_3/pokeball_map.bin.lz");
+const u32 gIntroPokeball_Gfx[]         = INCBIN_U32("graphics/intro/scene_3/pokeball.8bpp.lz");
+const u16 gIntroStreaks_Pal[]          = INCBIN_U16("graphics/intro/scene_3/streaks.gbapal"); // Unused
+const u32 gIntroStreaks_Gfx[]          = INCBIN_U32("graphics/intro/scene_3/streaks.4bpp.lz"); // Unused
+const u32 gIntroStreaks_Tilemap[]      = INCBIN_U32("graphics/intro/scene_3/streaks_map.bin.lz"); // Unused
+const u16 gIntroRayquzaOrb_Pal[]       = INCBIN_U16("graphics/intro/scene_3/rayquaza_orb.gbapal");
+const u16 gIntroMisc_Pal[]             = INCBIN_U16("graphics/intro/scene_3/misc.gbapal"); // Unused
+const u32 gIntroMisc_Gfx[]             = INCBIN_U32("graphics/intro/scene_3/misc.4bpp.lz"); // Rayquza orb, and misc unused gfx
+const u16 gIntroFlygonSilhouette_Pal[] = INCBIN_U16("graphics/intro/scene_1/flygon.gbapal");
+const u32 gIntroLati_Gfx[]             = INCBIN_U32("graphics/intro/scene_1/lati.4bpp.lz"); // Unused

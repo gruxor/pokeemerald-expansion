@@ -23,6 +23,9 @@
 #include "constants/rgb.h"
 #include "constants/songs.h"
 
+// !!! config this
+#include "rs_intro.h"
+
 #define VERSION_BANNER_RIGHT_TILEOFFSET 64
 #define VERSION_BANNER_LEFT_X 98
 #define VERSION_BANNER_RIGHT_X 162
@@ -778,7 +781,7 @@ static void CB2_GoToMainMenu(void)
 static void CB2_GoToCopyrightScreen(void)
 {
     if (!UpdatePaletteFade())
-        SetMainCallback2(CB2_InitCopyrightScreenAfterTitleScreen);
+        SetMainCallback2(CB2_RSInitCopyrightScreenAfterTitleScreen); // !!! config this
 }
 
 static void CB2_GoToClearSaveDataScreen(void)

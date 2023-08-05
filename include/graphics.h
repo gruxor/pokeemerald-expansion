@@ -9098,6 +9098,28 @@ extern const u16 gIntroPlayer_Pal[];
 extern const u16 gIntroFlygon_Pal[];
 extern const u32 gIntroFlygon_Gfx[];
 
+// intro.c changes for RSTN
+extern const u16 gIntroDrops_Pal[];
+extern const u16 gIntroLogo_Pal[];
+extern const u32 gIntroDropsLogo_Gfx[];
+extern const u16 gIntro1Bg_Pal[16][16];
+extern const u32 gIntro1Bg0_Tilemap[];
+extern const u32 gIntro1Bg1_Tilemap[];
+extern const u32 gIntro1Bg2_Tilemap[];
+extern const u32 gIntro1Bg3_Tilemap[];
+extern const u32 gIntro1Bg_Gfx[];
+extern const u16 gIntroPokeball_Pal[];
+extern const u32 gIntroPokeball_Tilemap[];
+extern const u32 gIntroPokeball_Gfx[];
+extern const u16 gIntroStreaks_Pal[];
+extern const u32 gIntroStreaks_Gfx[];
+extern const u32 gIntroStreaks_Tilemap[];
+extern const u16 gIntroRayquzaOrb_Pal[];
+extern const u16 gIntroMisc_Pal[];
+extern const u32 gIntroMisc_Gfx[];
+extern const u16 gIntroFlygonSilhouette_Pal[];
+extern const u32 gIntroLati_Gfx[];
+
 // party menu graphics
 extern const u32 gPartyMenuBg_Gfx[];
 extern const u32 gPartyMenuBg_Tilemap[];

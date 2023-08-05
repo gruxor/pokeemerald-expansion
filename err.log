@@ -1,0 +1,34 @@
+libpng warning: bKGD: invalid index
+libpng warning: bKGD: invalid index
+libpng warning: bKGD: invalid index
+libpng warning: bKGD: invalid index
+libpng warning: bKGD: invalid index
+src/pokemon.c:4753:5: warning: 'GetMonData2' alias between functions of incompatible types 'u32(struct Pokemon *, s32)' {aka 'long unsigned int(struct Pokemon *, long int)'} and 'u32(struct Pokemon *, s32,  u8 *)' {aka 'long unsigned int(struct Pokemon *, long int,  unsigned char *)'} [-Wattribute-alias=]
+ 4753 | u32 GetMonData2(struct Pokemon *mon, s32 field) __attribute__((alias("GetMonData3")));
+      |     ^~~~~~~~~~~
+src/pokemon.c:4695:5: note: aliased declaration here
+ 4695 | u32 GetMonData3(struct Pokemon *mon, s32 field, u8 *data)
+      |     ^~~~~~~~~~~
+src/pokemon.c:5123:5: warning: 'GetBoxMonData2' alias between functions of incompatible types 'u32(struct BoxPokemon *, s32)' {aka 'long unsigned int(struct BoxPokemon *, long int)'} and 'u32(struct BoxPokemon *, s32,  u8 *)' {aka 'long unsigned int(struct BoxPokemon *, long int,  unsigned char *)'} [-Wattribute-alias=]
+ 5123 | u32 GetBoxMonData2(struct BoxPokemon *boxMon, s32 field) __attribute__((alias("GetBoxMonData3")));
+      |     ^~~~~~~~~~~~~~
+src/pokemon.c:4759:5: note: aliased declaration here
+ 4759 | u32 GetBoxMonData3(struct BoxPokemon *boxMon, s32 field, u8 *data)
+      |     ^~~~~~~~~~~~~~
+src/rs_intro.c:94:18: error: static declaration of 'gIntroDrops_Pal' follows non-static declaration
+   94 | static const u16 gIntroDrops_Pal[] = INCBIN_U16("graphics/rstoration/intro/unknown1.gbapal");
+      |                  ^~~~~~~~~~~~~~~
+In file included from src/rs_intro.c:28:
+include/graphics.h:9102:18: note: previous declaration of 'gIntroDrops_Pal' was here
+ 9102 | extern const u16 gIntroDrops_Pal[];
+      |                  ^~~~~~~~~~~~~~~
+src/rs_intro.c:95:18: error: static declaration of 'gIntroLogo_Pal' follows non-static declaration
+   95 | static const u16 gIntroLogo_Pal[] = INCBIN_U16("graphics/rstoration/intro/unknown2.gbapal");
+      |                  ^~~~~~~~~~~~~~
+In file included from src/rs_intro.c:28:
+include/graphics.h:9103:18: note: previous declaration of 'gIntroLogo_Pal' was here
+ 9103 | extern const u16 gIntroLogo_Pal[];
+      |                  ^~~~~~~~~~~~~~
+make: *** [Makefile:380: build/modern/src/rs_intro.o] Error 1
+make: *** Deleting file 'build/modern/src/rs_intro.o'
+make: *** Waiting for unfinished jobs....

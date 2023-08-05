@@ -1,5 +1,5 @@
-#ifndef GUARD_CONFIG_RSTORATION
-#define GUARD_CONFIG_RSTORATION
+#ifndef GUARD_RSTN_CONFIG
+#define GUARD_RSTN_CONFIG
 
 /*
     NOTE: All options default to FALSE.
@@ -9,12 +9,17 @@
     Any options that are not yet implemented are marked with a TODO in their description.
 */
 
-// Boolean for swapping game versions
+// Boolean for swapping game versions. No effect if options are FALSE.
 // 0 = Ruby; 1 = Sapphire
 #define RSTN_VERSION 0
 
 // TODO Intro cutscenes
-#define RSTN_INTRO_GFX /*EM*/ FALSE
+#define RSTN_INTRO_GFX /*RS*/ TRUE
+
+// Sets the color of the player's attire in the intro scenes. Also affects credits sequence.
+// 0 = Emerald Green, 1 = R/S Red, 2 = Mandela Blue
+#define RSTN_INTRO_PLAYER_GFX /*--*/ 1
+// TODO might need a rival color for credits, i forget
 
 // TODO The general graphics used for the main menu, i.e. Rayquaza/Groudon/Kyogre
 #define RSTN_MENU_GFX /*RS*/ FALSE
@@ -22,10 +27,12 @@
 // TODO Which version text to use on the main menu
 #define RSTN_MENU_LOGO /*RS*/ FALSE
 
-// TODO Brendan/May Sprites
-// The "MANDELA" option enables a palette swap for Sapphire sprites, making Brendan/May's gear blue instead of red.
-#define RSTN_PLAYER_SPRITES /*EM*/ FALSE
-#define RSTN_PLAYER_MANDELA /*RS*/ FALSE
+// TODO Brendan/May Overworld Sprite Colors
+// 0 = Emerald Green, 1 = R/S Red, 2 = Mandela Blue
+// NOTE: Blue was never an outfit color in any of the 3 games, but many people misremember Sapphire as 
+// having blue outfits for the player/rival. Setting either option to 2 will use a custom blue outfit.
+#define RSTN_PLAYER_OW_COLOR /*--*/ 1
+#define RSTN_RIVAL_OW_COLOR /*--*/ 1
 
 // TODO Vigoroth/Machoke Movers
 // Ruby/Sapphire's moving crew in the opening sequence were Machokes, rather than Emerald's Vigoroth.
@@ -38,7 +45,7 @@
 // TODO Contest/Quiz/Favor Lady in Lilycove?
 
 // TODO "New Move Tutors added, including most of the ones in FireRed and LeafGreen
-// might need to add an option here to undo the map swap killing these guys?\
+// might need to add an option here to undo the map swap killing these guys?
 // per map?
 // fuck thats gonna be a lot of maps idk
 
@@ -128,4 +135,4 @@
 //* Carryovers from FRLG (Union Room, Mystery Gift, PP color (lol), other stuff if not mentioned elsewhere)
 //  Some stuff won't be used often with romhacks anyways. For PP text color, it's just a direct upgrade imo.
 
-#endif
+#endif // GUARD_RSTN_CONFIG
