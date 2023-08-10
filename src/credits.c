@@ -415,7 +415,7 @@ void CB2_StartCreditsSequence(void)
 
     ResetGpuAndVram();
     SetVBlankCallback(NULL);
-    InitHeap(gHeap, __HEAP_SIZE);
+    InitHeap();
     ResetPaletteFade();
     ResetTasks();
     InitCreditsBgsAndWindows();

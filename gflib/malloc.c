@@ -152,11 +152,9 @@ bool32 CheckMemBlockInternal(void *heapStart, void *pointer)
     return TRUE;
 }
 
-void InitHeap(void *heapStart, u32 heapSize)
+void InitHeap()
 {
-    sHeapStart = heapStart;
-    sHeapSize = heapSize;
-    PutFirstMemBlockHeader(heapStart, heapSize);
+    PutFirstMemBlockHeader((void *)__HEAP_START, (u32)__HEAP_SIZE);
 }
 
 void *Alloc_(u32 size, const char *location)

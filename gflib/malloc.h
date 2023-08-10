@@ -55,7 +55,7 @@ struct MemBlock
 void *Alloc_(u32 size, const char *location);
 void *AllocZeroed_(u32 size, const char *location);
 void Free(void *pointer);
-void InitHeap(void *pointer, u32 size);
+void InitHeap();
 
 const struct MemBlock *HeapHead(void);
 const char *MemBlockLocation(const struct MemBlock *block);

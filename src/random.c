@@ -65,7 +65,7 @@ void Shuffle32(void *data_, size_t n)
 
 void ShuffleN(void *data, size_t n, size_t size)
 {
-    void *tmp = alloca(size);
+    u8 tmp[size];
     --n;
     while (n > 1)
     {
