@@ -175,26 +175,6 @@ static EWRAM_DATA u16 sFlygonYOffset = 0;
 u32 gIntroFrameCounter;
 struct GcmbStruct gMultibootProgramStruct;
 
-static const u16 sIntroDrops_Pal[]            = INCBIN_U16("graphics/intro/scene_1/drops.gbapal");
-static const u16 sIntroLogo_Pal[]             = INCBIN_U16("graphics/intro/scene_1/logo.gbapal");
-static const u32 sIntroDropsLogo_Gfx[]        = INCBIN_U32("graphics/intro/scene_1/drops_logo.4bpp.lz");
-static const u16 sIntro1Bg_Pal[]              = INCBIN_U16("graphics/intro/scene_1/bg.gbapal"); // 16 x 16
-static const u32 sIntro1Bg0_Tilemap[]         = INCBIN_U32("graphics/intro/scene_1/bg0_map.bin.lz");
-static const u32 sIntro1Bg1_Tilemap[]         = INCBIN_U32("graphics/intro/scene_1/bg1_map.bin.lz");
-static const u32 sIntro1Bg2_Tilemap[]         = INCBIN_U32("graphics/intro/scene_1/bg2_map.bin.lz");
-static const u32 sIntro1Bg3_Tilemap[]         = INCBIN_U32("graphics/intro/scene_1/bg3_map.bin.lz");
-static const u32 sIntro1Bg_Gfx[]              = INCBIN_U32("graphics/intro/scene_1/bg.4bpp.lz");
-static const u16 sIntroPokeball_Pal[]         = INCBIN_U16("graphics/intro/scene_3/pokeball.gbapal");
-static const u32 sIntroPokeball_Tilemap[]     = INCBIN_U32("graphics/intro/scene_3/pokeball_map.bin.lz");
-static const u32 sIntroPokeball_Gfx[]         = INCBIN_U32("graphics/intro/scene_3/pokeball.8bpp.lz");
-static const u16 sIntroStreaks_Pal[]          = INCBIN_U16("graphics/intro/scene_3/streaks.gbapal"); // Unused
-static const u32 sIntroStreaks_Gfx[]          = INCBIN_U32("graphics/intro/scene_3/streaks.4bpp.lz"); // Unused
-static const u32 sIntroStreaks_Tilemap[]      = INCBIN_U32("graphics/intro/scene_3/streaks_map.bin.lz"); // Unused
-static const u16 sIntroRayquzaOrb_Pal[]       = INCBIN_U16("graphics/intro/scene_3/rayquaza_orb.gbapal");
-static const u16 sIntroMisc_Pal[]             = INCBIN_U16("graphics/intro/scene_3/misc.gbapal"); // Unused
-static const u32 sIntroMisc_Gfx[]             = INCBIN_U32("graphics/intro/scene_3/misc.4bpp.lz"); // Rayquza orb, and misc unused gfx
-static const u16 sIntroFlygonSilhouette_Pal[] = INCBIN_U16("graphics/intro/scene_1/flygon.gbapal");
-static const u32 sIntroLati_Gfx[]             = INCBIN_U32("graphics/intro/scene_1/lati.4bpp.lz"); // Unused
 static const u8 sUnusedData[] = {
     0x02, 0x03, 0x04, 0x05, 0x01, 0x01, 0x01, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x02, 0x0D,
     0x0E, 0x0F, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x02, 0x0D, 0x0E, 0x0F,
@@ -963,7 +943,7 @@ static const struct SpriteTemplate sSpriteTemplate_FlygonSilhouette =
 };
 static const struct CompressedSpriteSheet sSpriteSheet_WaterDropsAndLogo[] =
 {
-    {sIntroDropsLogo_Gfx, 0x1400, GFXTAG_DROPS_LOGO},
+    {gIntroDropsLogo_Gfx, 0x1400, GFXTAG_DROPS_LOGO},
     {},
 };
 static const struct CompressedSpriteSheet sSpriteSheet_FlygonSilhouette[] =
@@ -973,9 +953,9 @@ static const struct CompressedSpriteSheet sSpriteSheet_FlygonSilhouette[] =
 };
 static const struct SpritePalette sSpritePalettes_Intro1[] =
 {
-    {sIntroDrops_Pal, PALTAG_DROPS},
-    {sIntroLogo_Pal, PALTAG_LOGO},
-    {sIntroFlygonSilhouette_Pal, TAG_FLYGON_SILHOUETTE},
+    {gIntroDrops_Pal, PALTAG_DROPS},
+    {gIntroLogo_Pal, PALTAG_LOGO},
+    {gIntroFlygonSilhouette_Pal, TAG_FLYGON_SILHOUETTE},
     {},
 };
 static const struct OamData sOamData_RayquazaOrb =
@@ -1015,12 +995,12 @@ static const struct SpriteTemplate sSpriteTemplate_RayquazaOrb =
 };
 static const struct CompressedSpriteSheet sSpriteSheet_RayquazaOrb[] =
 {
-    {sIntroMisc_Gfx, 0xA00, TAG_RAYQUAZA_ORB},
+    {gIntroMisc_Gfx, 0xA00, TAG_RAYQUAZA_ORB},
     {},
 };
 static const struct SpritePalette sSpritePalette_RayquazaOrb[] =
 {
-    {sIntroRayquzaOrb_Pal, TAG_RAYQUAZA_ORB},
+    {gIntroRayquzaOrb_Pal, TAG_RAYQUAZA_ORB},
     {},
 };
 
@@ -1178,16 +1158,16 @@ void Task_Scene1_Load(u8 taskId)
     SetGpuReg(REG_OFFSET_BG2VOFS, 80);
     SetGpuReg(REG_OFFSET_BG1VOFS, 24);
     SetGpuReg(REG_OFFSET_BG0VOFS, 40);
-    LZ77UnCompVram(sIntro1Bg_Gfx, (void *)VRAM);
-    LZ77UnCompVram(sIntro1Bg0_Tilemap, (void *)(BG_CHAR_ADDR(2)));
+    LZ77UnCompVram(gIntro1Bg_Gfx, (void *)VRAM);
+    LZ77UnCompVram(gIntro1Bg0_Tilemap, (void *)(BG_CHAR_ADDR(2)));
     DmaClear16(3, BG_SCREEN_ADDR(17), BG_SCREEN_SIZE);
-    LZ77UnCompVram(sIntro1Bg1_Tilemap, (void *)(BG_SCREEN_ADDR(18)));
+    LZ77UnCompVram(gIntro1Bg1_Tilemap, (void *)(BG_SCREEN_ADDR(18)));
     DmaClear16(3, BG_SCREEN_ADDR(19), BG_SCREEN_SIZE);
-    LZ77UnCompVram(sIntro1Bg2_Tilemap, (void *)(BG_SCREEN_ADDR(20)));
+    LZ77UnCompVram(gIntro1Bg2_Tilemap, (void *)(BG_SCREEN_ADDR(20)));
     DmaClear16(3, BG_SCREEN_ADDR(21), BG_SCREEN_SIZE);
-    LZ77UnCompVram(sIntro1Bg3_Tilemap, (void *)(BG_SCREEN_ADDR(22)));
+    LZ77UnCompVram(gIntro1Bg3_Tilemap, (void *)(BG_SCREEN_ADDR(22)));
     DmaClear16(3, BG_SCREEN_ADDR(23), BG_SCREEN_SIZE);
-    LoadPalette(sIntro1Bg_Pal, BG_PLTT_ID(0), sizeof(sIntro1Bg_Pal));
+    LoadPalette(gIntro1Bg_Pal, BG_PLTT_ID(0), sizeof(gIntro1Bg_Pal));
     SetGpuReg(REG_OFFSET_BG3CNT, BGCNT_PRIORITY(3) | BGCNT_CHARBASE(0) | BGCNT_SCREENBASE(22) | BGCNT_16COLOR | BGCNT_TXT256x512);
     SetGpuReg(REG_OFFSET_BG2CNT, BGCNT_PRIORITY(2) | BGCNT_CHARBASE(0) | BGCNT_SCREENBASE(20) | BGCNT_16COLOR | BGCNT_TXT256x512);
     SetGpuReg(REG_OFFSET_BG1CNT, BGCNT_PRIORITY(1) | BGCNT_CHARBASE(0) | BGCNT_SCREENBASE(18) | BGCNT_16COLOR | BGCNT_TXT256x512);
@@ -1724,9 +1704,9 @@ static void SpriteCB_Manectric(struct Sprite *sprite)
 static void Task_Scene3_Load(u8 taskId)
 {
     IntroResetGpuRegs();
-    LZ77UnCompVram(sIntroPokeball_Gfx, (void *)VRAM);
-    LZ77UnCompVram(sIntroPokeball_Tilemap, (void *)(BG_CHAR_ADDR(1)));
-    LoadPalette(sIntroPokeball_Pal, BG_PLTT_ID(0), sizeof(sIntroPokeball_Pal));
+    LZ77UnCompVram(gIntroPokeball_Gfx, (void *)VRAM);
+    LZ77UnCompVram(gIntroPokeball_Tilemap, (void *)(BG_CHAR_ADDR(1)));
+    LoadPalette(gIntroPokeball_Pal, BG_PLTT_ID(0), 0x200);
     gTasks[taskId].tAlpha = 0;
     gTasks[taskId].tZoomDiv = 0;
     gTasks[taskId].tZoomDivSpeed = 0;

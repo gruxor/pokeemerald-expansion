@@ -22,6 +22,8 @@
 #include "graphics.h"
 #include "constants/rgb.h"
 #include "constants/songs.h"
+// !!! config this
+#include "rs_intro.h"
 
 enum {
     TAG_VERSION = 1000,
@@ -830,7 +832,7 @@ static void CB2_GoToMainMenu(void)
 static void CB2_GoToCopyrightScreen(void)
 {
     if (!UpdatePaletteFade())
-        SetMainCallback2(CB2_InitCopyrightScreenAfterTitleScreen);
+        SetMainCallback2(CB2_RSInitCopyrightScreenAfterTitleScreen); // !!! config this
 }
 
 static void CB2_GoToClearSaveDataScreen(void)
